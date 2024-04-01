@@ -1,7 +1,7 @@
 package com.project.file.search;
 
 import com.project.file.search.exception.SearchException;
-import com.project.file.search.service.impl.LogServiceImpl;
+import com.project.file.search.service.impl.S3LogSearchImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,10 +26,10 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-public class LogServiceTest {
+public class S3LogSearchImplTest {
 
     @InjectMocks
-    private LogServiceImpl logService;
+    private S3LogSearchImpl logService;
     @Mock
     private S3Client s3Client;
 

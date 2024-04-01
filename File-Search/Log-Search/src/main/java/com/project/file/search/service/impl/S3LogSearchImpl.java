@@ -1,7 +1,7 @@
 package com.project.file.search.service.impl;
 
 import com.project.file.search.exception.SearchException;
-import com.project.file.search.services.LogService;
+import com.project.file.search.services.LogSearchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class LogServiceImpl implements LogService {
+public class S3LogSearchImpl implements LogSearchService {
     @Value("${aws.bucket.name}")
     private String bucketName;
 

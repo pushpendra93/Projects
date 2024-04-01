@@ -2,12 +2,12 @@ package com.project.file.search.controller;
 
 import com.project.file.search.dto.response.SearchResponse;
 import com.project.file.search.exception.SearchException;
-import com.project.file.search.service.impl.LogServiceImpl;
-import com.project.file.search.services.LogService;
+import com.project.file.search.services.LogSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,11 +16,12 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 @RestController
+@RequestMapping("/log")
 @Validated
-public class LogController {
+public class LogSearchController {
 
     @Autowired
-    private LogService logService;
+    private LogSearchService logService;
 
     /**
      * Endpoint for searching logs based on search criteria.
