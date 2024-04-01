@@ -1,9 +1,11 @@
 package com.project.file.search.service.impl;
 
+import com.project.file.search.exception.SearchException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
@@ -14,24 +16,21 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Service
+@Slf4j
 public class LogService {
-
-    private static final Logger logger = LoggerFactory.getLogger(LogService.class);
-
     @Value("${aws.bucket.name}")
     private String bucketName;
 
-    public List<String> searchLogs(String searchKeyword, LocalDateTime from, LocalDateTime to) {
-        List<String> matchingLines = new ArrayList<>();
-        S3Client s3Client = S3Client.builder()
-                .region(Region.US_EAST_1)
-                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                .build();
+    @Autowired
+    private S3Client s3Client;
 
+    public List<String> searchLogs(String searchKeyword, LocalDateTime from, LocalDateTime to) throws SearchException {
+
+        List<String> matchingLines = new ArrayList<>();
+        if(searchKeyword.isEmpty()){
+            return matchingLines;
+        }
         try {
             List<LocalDateTime> dateRange = getDateRange(from, to);
             for (LocalDateTime date : dateRange) {
@@ -57,8 +56,10 @@ public class LogService {
                 }
             }
         } catch (S3Exception | IOException e) {
-            logger.error("Error occurred while searching logs: {}", e.getMessage());
-            throw new RuntimeException("Error occurred while searching logs", e);
+            log.error("Error occurred while searching logs with search-keyword: {}",
+                    searchKeyword,
+                    e);
+            throw new SearchException("Error occurred while searching logs", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return matchingLines;
     }
