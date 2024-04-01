@@ -1,6 +1,7 @@
 package com.project.file.search.service.impl;
 
 import com.project.file.search.exception.SearchException;
+import com.project.file.search.services.LogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +19,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class LogService {
+public class LogServiceImpl implements LogService {
     @Value("${aws.bucket.name}")
     private String bucketName;
 
@@ -28,25 +29,20 @@ public class LogService {
     public List<String> searchLogs(String searchKeyword, LocalDateTime from, LocalDateTime to) throws SearchException {
 
         List<String> matchingLines = new ArrayList<>();
-        if(searchKeyword.isEmpty()){
+        if (searchKeyword.isEmpty()) {
             return matchingLines;
         }
         try {
             List<LocalDateTime> dateRange = getDateRange(from, to);
             for (LocalDateTime date : dateRange) {
                 String folderName = date.toString().substring(0, 10);
-                ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
-                        .bucket(bucketName)
-                        .prefix(folderName + "/")
-                        .build();
+                ListObjectsV2Request listRequest = ListObjectsV2Request.builder().bucket(bucketName).prefix(folderName + "/").build();
                 ListObjectsV2Response listResponse = s3Client.listObjectsV2(listRequest);
 
                 for (S3Object s3Object : listResponse.contents()) {
-                    GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                            .bucket(bucketName).key(s3Object.key()).build();
+                    GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucketName).key(s3Object.key()).build();
 
-                    BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(s3Client.getObject(getObjectRequest)));
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(s3Client.getObject(getObjectRequest)));
                     String line;
                     while ((line = reader.readLine()) != null) {
                         if (line.contains(searchKeyword)) {
@@ -56,9 +52,7 @@ public class LogService {
                 }
             }
         } catch (S3Exception | IOException e) {
-            log.error("Error occurred while searching logs with search-keyword: {}",
-                    searchKeyword,
-                    e);
+            log.error("Error occurred while searching logs with search-keyword: {}", searchKeyword, e);
             throw new SearchException("Error occurred while searching logs", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return matchingLines;

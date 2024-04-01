@@ -2,13 +2,15 @@ package com.project.file.search.controller;
 
 import com.project.file.search.dto.response.SearchResponse;
 import com.project.file.search.exception.SearchException;
-import com.project.file.search.service.impl.LogService;
+import com.project.file.search.service.impl.LogServiceImpl;
+import com.project.file.search.services.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
